@@ -3,6 +3,8 @@ import os
 import re
 import define
 
+__version__ = "1.0.1"
+
 # バージョン情報のテキストを数字に変換する
 def version_text_to_num(version):
 	try:
@@ -42,37 +44,38 @@ for file_path in file_path_list:
 			#print(row.group(4).rstrip("\n"))
 			#print("#"*60)
 
-			tbody += "\t"*2 + "<tr>\n"
+			indent_num = 3
+			tbody += "\t"*indent_num + "<tr>\n"
 			version_num_list = version_text_to_num(row.group(1))
 			if version_num_list[2] == 0:			# 新要素追加のアップデートなら
 				if not combining_flag:				# 結合されたセルでなければ通常通り処理する
-					tbody += "\t"*3 + '<td class="center">{}</td>\n'.format(update_title)
+					tbody += "\t"*(indent_num + 1) + '<td class="center">{}</td>\n'.format(update_title)
 				else:								# 結合されたセルの一番最初のバージョンなら更新タイトルを参照する
 					tbody = tbody.format(title=update_title)
 					combining_flag = False
 			else:									# バグ修正のアップデートなら
 				if not combining_flag:				# 一番上のバージョンにタイトルセルを結合する
-					tbody += "\t"*3 + '<td class="center" rowspan="{}">{}</td>\n'.format(version_num_list[2] + 1, "{title}")
+					tbody += "\t"*(indent_num + 1) + '<td class="center" rowspan="{}">{}</td>\n'.format(version_num_list[2] + 1, "{title}")
 					combining_flag = True
-			tbody += "\t"*3 + '<td class="center">{}</td>\n'.format(row.group(1))			# バージョン
+			tbody += "\t"*(indent_num + 1) + '<td class="center">{}</td>\n'.format(row.group(1))			# バージョン
 			datetime_str = re.sub(r'^(.*?)/(.*?)/(.*?)$', r'\1年\2月\3日', row.group(2))
-			tbody += "\t"*3 + '<td class="center">{}</td>\n'.format(datetime_str)			# 日付
+			tbody += "\t"*(indent_num + 1) + '<td class="center">{}</td>\n'.format(datetime_str)			# 日付
 			contents = row.group(4).rstrip("\n")							# 更新内容
 			contents = escape_html(contents)
 			contents_list = contents.split("\n\n", 1)						# 機能追加と不具合修正で分割する
 			for i in range(len(contents_list)):
-				contents_list[i] = contents_list[i].replace("\n", "<br>\n" + "\t"*6)
+				contents_list[i] = contents_list[i].replace("\n", "<br>\n" + "\t"*(indent_num + 4))
 			contents = define.BOX_HTML.format(title="機能追加", color="royalblue", back_color="aliceblue", text=contents_list[0])
 			if version_num_list[2] != 0:			# 不具合修正だけのバージョンなら最初の塊から不具合修正にする
 				contents = define.BOX_HTML.format(title="不具合修正と調整", color="orange", back_color="lightgoldenrodyellow", text=contents_list[0])
 			if len(contents_list) == 2:
 				contents += define.BOX_HTML.format(title="不具合修正と調整", color="orange", back_color="lightgoldenrodyellow", text=contents_list[1])
-			tbody += "\t"*3 + "<td>{}\n\t\t\t</td>\n".format(contents)
-			tbody += "\t"*2 + "</tr>\n"
+			tbody += "\t"*(indent_num + 1) + "<td>{}\n".format(contents) + "\t"*(indent_num + 1) + "</td>\n"
+			tbody += "\t"*indent_num + "</tr>\n"
 
 		
 		table = define.TABLE_HTML.format(tbody=tbody)
-		html_text = define.HTML_TEMPLATE.format(title="更新履歴", description="ツールの更新履歴", body=table)
+		html_text = define.HTML_TEMPLATE.format(title="更新履歴", description="ツールの更新履歴", body=table, version=__version__)
 		out_file_path = os.path.splitext(file_path)[0] + ".html"
 		with open(out_file_path, "w", encoding=define.CHARACTER_ENCODING) as f:
 			f.write(html_text)
@@ -81,6 +84,13 @@ for file_path in file_path_list:
 
 
 '''     更新履歴
+----------------------------------------------------------------------------------------------------------
+ver.1.0.1 (2021/10/16)
+生成されるHTMLの最後にバージョン情報を含むコメントを追加
+<p>タグ内の文章の一行目が改行されていない不具合を修正
+<table>タグが<body>タグと同じインデントになっていた不具合を修正
+</tbody>タグが正常にインデントされていない不具合を修正
+
 ----------------------------------------------------------------------------------------------------------
 ver.1.0.0 (2021/09/26)
 リリース

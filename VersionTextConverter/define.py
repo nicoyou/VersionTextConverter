@@ -44,28 +44,30 @@ HTML_TEMPLATE = '''<!DOCTYPE html>
 
 <body>
 {body}</body>
+<!-- Converted by VersionTextConverter ver.{version} -->
 </html>'''
 
-TABLE_HTML = '''<table border="1" style="border-collapse: collapse;">
-	<thead>
-		<tr>
-			<th>アップデート</th>
-			<th>バージョン</th>
-			<th>リリース日</th>
-			<th>変更内容</th>
-		</tr>
-	</thead>
-	<tbody>
-{tbody}</tbody>
-</table>
+TABLE_HTML = '''	<table border="1" style="border-collapse: collapse;">
+		<thead>
+			<tr>
+				<th>アップデート</th>
+				<th>バージョン</th>
+				<th>リリース日</th>
+				<th>変更内容</th>
+			</tr>
+		</thead>
+		<tbody>
+{tbody}\t\t</tbody>
+	</table>
 '''
 
 BOX_HTML = '''
-				<div class="text_box" style="border-color: {color}; background: {back_color};">
-					<span class="box-title", style="background: {color};">{title}</span>
-					<p>{text}
-					</p>
-				</div>'''
+					<div class="text_box" style="border-color: {color}; background: {back_color};">
+						<span class="box-title", style="background: {color};">{title}</span>
+						<p>
+							{text}
+						</p>
+					</div>'''
 
 HTML_ESCAPE_TABLE = [
 	["&", "&amp;"],
