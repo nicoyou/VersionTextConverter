@@ -1,2 +1,4 @@
-.vs/
 VersionTextConverter/__pycache__/
+VersionTextConverter/update_data.json
+VersionTextConverter/version_log.html
+.vs/

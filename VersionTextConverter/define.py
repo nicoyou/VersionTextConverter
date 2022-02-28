@@ -1,4 +1,13 @@
+import enum
+
+class JSON_KEY(str, enum.Enum):
+	date = "date"
+	file_name = "file_name"
+	version = "version"
+	title = "title"
+
 CHARACTER_ENCODING = "utf-8"
+EXPORT_JSON_PATH = "./update_data.json"
 HTML_TEMPLATE = '''<!DOCTYPE html>
 <html lang="ja">
 <head>

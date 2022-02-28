@@ -1,9 +1,11 @@
 import glob
 import os
 import re
+import json
+import time
 import define
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 # バージョン情報のテキストを数字に変換する
 def version_text_to_num(version):
@@ -23,6 +25,7 @@ def escape_html(text):
 
 
 file_path_list = glob.glob("./*.txt")
+update_info_list = []
 
 for file_path in file_path_list:
 	with open(file_path, "r", encoding=define.CHARACTER_ENCODING) as f:
@@ -43,6 +46,12 @@ for file_path in file_path_list:
 			#print(update_title)
 			#print(row.group(4).rstrip("\n"))
 			#print("#"*60)
+			update_info_list.append({
+				define.JSON_KEY.date: row.group(2),
+				define.JSON_KEY.file_name: os.path.splitext(os.path.basename(file_path))[0],
+				define.JSON_KEY.version: row.group(1),
+				define.JSON_KEY.title: update_title
+			})
 
 			indent_num = 3
 			tbody += "\t"*indent_num + "<tr>\n"
@@ -79,11 +88,22 @@ for file_path in file_path_list:
 		out_file_path = os.path.splitext(file_path)[0] + ".html"
 		with open(out_file_path, "w", encoding=define.CHARACTER_ENCODING) as f:
 			f.write(html_text)
-		print("\n\n更新履歴をHTMLへ変換しました\n{}".format(out_file_path))
+		print("\n\n更新履歴をHTMLへ変換しました\n{}\n".format(out_file_path))
 
+export_json = True
+if export_json:
+	json_str = json.dumps(update_info_list, indent=4, ensure_ascii=False)		# 文字列として出力する
+	with open(define.EXPORT_JSON_PATH, "w", encoding="utf-8") as f:
+		f.write(json_str)												# ファイルに出力する
+		print(f"読み込んだ全ての更新情報をjsonに出力しました\n{define.EXPORT_JSON_PATH}\n")
 
+time.sleep(10)
 
 '''     更新履歴
+----------------------------------------------------------------------------------------------------------
+ver.1.1.0 (2022/01/30)
+htmlに変換した全てのファイルの更新情報をまとめてjsonに出力する機能を追加
+
 ----------------------------------------------------------------------------------------------------------
 ver.1.0.1 (2021/10/16)
 生成されるHTMLの最後にバージョン情報を含むコメントを追加
